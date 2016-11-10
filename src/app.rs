@@ -18,22 +18,27 @@ impl App {
         const GRAY: [f32; 4] = [0.9, 0.9, 0.9, 1.0];
         const GRAY2: [f32; 4] = [0.5, 0.5, 0.5, 0.8];
         const RED:  [f32; 4] = [0.9, 0.1, 0.1, 1.0];
-
+        let center_x = args.width as f64 / 2.0;
+        let center_y = args.height as f64 / 2.0;
         let panel_size = (args.height / NPANELS_Y) as f64;
         let board_size_x = panel_size * NPANELS_X as f64;
         let board_size_y = panel_size * NPANELS_Y as f64;
-        let x = panel_size * self.board.panel_x as f64;
-        let y = panel_size * self.board.panel_y as f64;
-        let board = rectangle::centered([0.0, 0.0, board_size_x, board_size_y]);
-        let square = rectangle::square(x, y, panel_size);
-        let square2 = rectangle::square(0.0, y + panel_size, panel_size);
+        let sx = center_x - board_size_x / 2.0;
+        let sy = center_y - board_size_y / 2.0;
+        let dx = panel_size * self.board.panel_x as f64;
+        let dy = panel_size * self.board.panel_y as f64;
+        let board_rect =    [ center_x
+                            , center_y
+                            , board_size_x / 2.0
+                            , board_size_y / 2.0];
+        let board = rectangle::centered(board_rect);
+        let square = rectangle::square(sx+dx, sy+dy, panel_size);
 
         self.gl.draw(args.viewport(), |c, gl| {
             let transform = c.transform.trans(1.0,1.0);
             clear(GRAY, gl);
             rectangle(GRAY2, board, transform, gl);
             rectangle(RED, square, transform, gl);
-            rectangle(RED, square2, transform, gl);
         });
     }
 
