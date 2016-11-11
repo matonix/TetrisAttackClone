@@ -1,31 +1,45 @@
+use cursor::Cursor;
+use graphics::*;
+use opengl_graphics::GlGraphics;
+
 pub struct Board {
-    pub panel_x: u32,
-    pub panel_y: u32
+    cursor: Cursor,
+    board_color: types::Color
 }
 
 impl Board {
+    pub fn new() -> Self {
+        Board {
+            cursor: Cursor::new(),
+            board_color: [0.2, 0.2, 0.2, 0.5]
+        }
+    }
+
+    pub fn render(&self, rect: types::Rectangle,
+            c: &Context, gl: &mut GlGraphics) {
+        Rectangle::new(self.board_color)
+            .draw(
+                rect,
+                &DrawState::default(),
+                c.transform,
+                gl
+            );
+        // cursor.render(&args, &gl);
+    }
 
     pub fn left(&mut self) {
-        if self.panel_x > 0 {
-            self.panel_x -= 1;
-        }
+        self.cursor.left();
     }
 
     pub fn right(&mut self) {
-        if self.panel_x < 6 - 1 {
-            self.panel_x += 1;
-        }
+        self.cursor.right();
     }
 
     pub fn up(&mut self) {
-        if self.panel_y > 0 {
-            self.panel_y -= 1;
-        }
+        self.cursor.up();
     }
 
     pub fn down(&mut self) {
-        if self.panel_y < 20 - 1 {
-            self.panel_y += 1;
-        }
+        self.cursor.down();
     }
 }

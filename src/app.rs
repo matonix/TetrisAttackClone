@@ -1,44 +1,35 @@
-use opengl_graphics::{ GlGraphics };
+
+use opengl_graphics::{ OpenGL, GlGraphics };
 use board::Board;
 use piston::input::*;
-
+use graphics::*;
 
 pub struct App {
-    pub gl: GlGraphics,
-    pub board: Board
+    board: Board,
+    bg_color: types::Color
 }
 
 impl App {
-    pub fn render(&mut self, args: &RenderArgs) {
-        use graphics::*;
+    pub fn new() -> Self {
+        App {
+            board: Board::new(),
+            bg_color: [0.9, 0.9, 0.9, 1.0]
+        }
+    }
 
+    pub fn render(&mut self, args: &RenderArgs, gl: &mut GlGraphics) {
         const NPANELS_X: u32 = 6;
         const NPANELS_Y: u32 = 20;
 
-        const GRAY: [f32; 4] = [0.9, 0.9, 0.9, 1.0];
-        const GRAY2: [f32; 4] = [0.5, 0.5, 0.5, 0.8];
-        const RED:  [f32; 4] = [0.9, 0.1, 0.1, 1.0];
-        let center_x = args.width as f64 / 2.0;
-        let center_y = args.height as f64 / 2.0;
-        let panel_size = (args.height / NPANELS_Y) as f64;
-        let board_size_x = panel_size * NPANELS_X as f64;
-        let board_size_y = panel_size * NPANELS_Y as f64;
-        let sx = center_x - board_size_x / 2.0;
-        let sy = center_y - board_size_y / 2.0;
-        let dx = panel_size * self.board.panel_x as f64;
-        let dy = panel_size * self.board.panel_y as f64;
-        let board_rect =    [ center_x
-                            , center_y
-                            , board_size_x / 2.0
-                            , board_size_y / 2.0];
-        let board = rectangle::centered(board_rect);
-        let square = rectangle::square(sx+dx, sy+dy, panel_size);
-
-        self.gl.draw(args.viewport(), |c, gl| {
-            let transform = c.transform.trans(1.0,1.0);
-            clear(GRAY, gl);
-            rectangle(GRAY2, board, transform, gl);
-            rectangle(RED, square, transform, gl);
+        let cx = args.width as f64 / 2.0;
+        let cy = args.height as f64 / 2.0;
+        let hw = args.width as f64 *0.9 / 2.0;
+        let hh = args.height as f64 *0.9 / 2.0;
+        let rect = [cx-hw, cy-hh, hw*2.0, hh*2.0];
+        let ref c = Context::new_abs(args.width as f64, args.height as f64);
+        gl.draw(args.viewport(), |_, gl| {
+            clear(self.bg_color, gl);
+            self.board.render(rect, c, gl);
         });
     }
 

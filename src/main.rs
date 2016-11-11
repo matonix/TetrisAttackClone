@@ -8,9 +8,11 @@ use piston::event_loop::*;
 use piston::input::*;
 use glutin_window::GlutinWindow as Window;
 use opengl_graphics::{ OpenGL, GlGraphics };
+use app::App;
 
 mod app;
 mod board;
+mod cursor;
 mod settings;
 
 fn main() {
@@ -26,29 +28,21 @@ fn main() {
         .unwrap();
 
     // Create a new game and run it.
-    let board = board::Board {
-        panel_x: 0,
-        panel_y: 0
-    };
-
-    let mut app = app::App {
-        gl: GlGraphics::new(opengl),
-        board: board
-    };
-
+    let mut gl = GlGraphics::new(opengl);
+    let mut app = App::new();
     let mut events = window.events();
     while let Some(e) = events.next(&mut window) {
 
-        if let Some(r) = e.render_args() {
-            app.render(&r);
+        if let Some(ref args) = e.render_args() {
+            app.render(args, &mut gl);
         }
 
-        // if let Some(u) = e.update_args() {
-        //     app.update(&u);
+        // if let Some(ref args) = e.update_args() {
+        //     app.update(args);
         // }
 
-        if let Some(p) = e.press_args() {
-            app.press(&p);
+        if let Some(ref args) = e.press_args() {
+            app.press(args);
         }
     }
 }
